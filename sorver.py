@@ -163,8 +163,11 @@ class Handler(server.BaseHTTPRequestHandler):
         elif self.path == '/users':
             main_html = userlist_html()
         elif re.fullmatch(r'/r[A-Za-z0-9_-]*=*', self.path):
-            txt = base64.urlsafe_b64decode(self.path[2:].encode()).decode()
-            main_html = html.escape(txt)
+            try:
+                txt = base64.urlsafe_b64decode(self.path[2:].encode()).decode()
+                main_html = html.escape(txt)
+            except base64.binascii.Error:
+                pass
         elif self.path in ['/info', '/db']:
             main_html = htmldata[self.path[1:]]
         elif self.path == '/':
