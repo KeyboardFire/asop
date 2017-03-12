@@ -166,7 +166,7 @@ class Handler(server.BaseHTTPRequestHandler):
             try:
                 txt = base64.urlsafe_b64decode(self.path[2:].encode()).decode()
                 main_html = html.escape(txt)
-            except base64.binascii.Error:
+            except (base64.binascii.Error, UnicodeDecodeError):
                 pass
         elif self.path in ['/info', '/db']:
             main_html = htmldata[self.path[1:]]
