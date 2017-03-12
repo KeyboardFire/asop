@@ -258,7 +258,7 @@ class Handler(server.BaseHTTPRequestHandler):
                 (username,)).fetchone()
         if vals:
             uid, salt, hsh = vals
-            if hsh == hashlib.sha512(salt.encode() + password).hexdigest():
+            if hsh == hashlib.sha512((salt + password).encode()).hexdigest():
                 return uid
 
     def register(self, key, password):
