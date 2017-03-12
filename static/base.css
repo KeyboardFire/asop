@@ -1,0 +1,49 @@
+html, body {
+    color: #d8d8d8;
+    background-color: #181818;
+    font: 12pt sans-serif;
+    margin: 0px;
+    padding: 0px;
+}
+a { color: #86c1b9; }
+a:visited { color: #ba8baf; }
+header {
+    background-color: #282828;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 1em;
+}
+header > #hleft {
+    float: left;
+    padding: 5px;
+    margin: 0px;
+}
+header > #hleft > h1, header > #hleft > span > a {
+    display: inline;
+    margin-right: 1em;
+}
+header h1 > a#title, header h1 > a#title:visited {
+    color: #d8d8d8;
+}
+header > #userinfo {
+    float: right;
+    margin-right: 10px;
+    padding: 5px;
+}
+main {
+    max-width: 800px;
+    padding: 10px;
+    margin: 0px auto;
+}
+form {
+    margin: 25px 0px;
+}
+div.formgroup {
+    padding: 3px;
+}
+input, textarea {
+    color: #d8d8d8;
+    background-color: #383838;
+    border: 1px solid #585858;
+    border-radius: 5px;
+}
