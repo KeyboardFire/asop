@@ -202,26 +202,23 @@ class Handler(server.BaseHTTPRequestHandler):
         (cookie, xuid, xusername, xlevel) = self.uinfo()
 
         qs = self.rfile.read(int(self.headers.get('Content-Length', 0)))
-        qs = urllib.parse.parse_qs(qs)
+        qs = urllib.parse.parse_qs(qs.decode())
         loginid = None
 
-        if b'login' in qs and b'username' in qs and b'password' in qs:
-            loginid = self.login(
-                    qs[b'username'][0].decode(),
-                    qs[b'password'][0].decode())
-        elif b'register' in qs and b'key' in qs and b'rpassword' in qs:
-            loginid = self.register(
-                    qs[b'key'][0].decode(),
-                    qs[b'rpassword'][0].decode())
-        elif b'dbquery' in qs and b'password' in qs:
-            if hashlib.sha512(qs[b'password'][0]).hexdigest() == root_pwd_hash:
-                resp = repr(c.execute(qs[b'dbquery'][0].decode()).fetchall())
+        if 'login' in qs and 'username' in qs and 'password' in qs:
+            loginid = self.login(qs['username'][0], qs['password'][0])
+        elif 'register' in qs and 'key' in qs and 'rpassword' in qs:
+            loginid = self.register(qs['key'][0], qs['rpassword'][0])
+        elif 'dbquery' in qs and 'password' in qs:
+            if hashlib.sha512(qs['password'][0]).hexdigest() == root_pwd_hash:
+                resp = repr(c.execute(qs['dbquery'][0]).fetchall())
                 conn.commit()
             else:
                 resp = 'wrong password'
         elif xlevel:
-            param = b'answer' + str(xlevel).encode()
-            if param in qs: self.guess(xuid, xlevel, qs[param][0].decode())
+            param = 'answer' + str(xlevel)
+            if param in qs:
+                resp = self.guess(xuid, xlevel, qs[param][0])
 
         sid = None
         if loginid:
