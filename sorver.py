@@ -61,6 +61,7 @@ with open('answers.txt') as f:
 
 static = {
     '/favicon.ico': ('static/favicon.ico', 'image/x-icon'),
+    '/favicon.png': ('static/favicon.png', 'image/png'),
     '/base.css': ('static/base.css', 'text/css'),
     '/robots.txt': ('static/robots.txt', 'text/plain')
 }
@@ -184,8 +185,9 @@ class Handler(server.BaseHTTPRequestHandler):
                 main_html = htmldata['login']
 
         data = htmldata['base'] \
-                .replace('[[u]]', userinfo_html(uid, username)) \
-                .replace('[[m]]', main_html or htmldata['404']) \
+                .replace('[[userinfo]]', userinfo_html(uid, username)) \
+                .replace('[[main]]', main_html or htmldata['404']) \
+                .replace('[[path]]', self.path) \
                 .replace('[[username]]', str(username)) \
                 .encode()
 
