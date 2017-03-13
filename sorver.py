@@ -14,6 +14,8 @@ import sys
 import traceback
 import mimetypes
 
+import check
+
 root_pwd_hash = 'ba08da735b2350af9a26c6bd27a8825d3a178e199d5a6b2a2fce93619461'\
                 '017c233c1f55f0aab8dc530db3e52ca2779e933d897ab9fdcbcc5be18d51'\
                 '63b38491'
@@ -55,10 +57,6 @@ htmldata = {}
 for s in os.listdir('html'):
     with open('html/{}'.format(s)) as f:
         htmldata[s[:-5]] = f.read()
-
-answers = []
-with open('answers.txt') as f:
-    answers = [line.rstrip('\n') for line in f]
 
 static = {}
 for s in os.listdir('static'):
@@ -291,9 +289,9 @@ class Handler(server.BaseHTTPRequestHandler):
                 ''', (uid, level)).fetchone()
 
         if last_guess and time.time() - last_guess[0] < 60:
-            resp = 'you must wait at least a minute between guesses.'
+            return 'you must wait at least a minute between guesses.'
         else:
-            solved = re.fullmatch(answers[level - 1], txt, re.I)
+            solved = getattr(check, 'check' + str(level))(txt)
             c.execute('''
                     INSERT INTO Guesses (userid, level, guess, solved, tstamp)
                     VALUES (?, ?, ?, ?, ?)
