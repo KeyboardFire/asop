@@ -12,6 +12,7 @@ import base64
 import os
 import sys
 import traceback
+import mimetypes
 
 root_pwd_hash = 'ba08da735b2350af9a26c6bd27a8825d3a178e199d5a6b2a2fce93619461'\
                 '017c233c1f55f0aab8dc530db3e52ca2779e933d897ab9fdcbcc5be18d51'\
@@ -59,15 +60,10 @@ answers = []
 with open('answers.txt') as f:
     answers = [line.rstrip('\n') for line in f]
 
-static = {
-    '/favicon.ico': ('static/favicon.ico', 'image/x-icon'),
-    '/favicon.png': ('static/favicon.png', 'image/png'),
-    '/base.css': ('static/base.css', 'text/css'),
-    '/robots.txt': ('static/robots.txt', 'text/plain')
-}
-for k in static:
-    with open(static[k][0], 'rb') as f:
-        static[k] = (f.read(), static[k][1])
+static = {}
+for s in os.listdir('static'):
+    with open('static/' + s, 'rb') as f:
+        static['/' + s] = (f.read(), mimetypes.guess_type(s))
 
 def userinfo_html(uid, username):
     if uid:
