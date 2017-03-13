@@ -183,6 +183,7 @@ class Handler(server.BaseHTTPRequestHandler):
         data = htmldata['base'] \
                 .replace('[[u]]', userinfo_html(uid, username)) \
                 .replace('[[m]]', main_html or htmldata['404']) \
+                .replace('[[username]]', str(username)) \
                 .encode()
 
         self.send_response(200 if main_html else 404)
