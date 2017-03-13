@@ -97,7 +97,8 @@ def userlist_html():
     return '''
     <h2>users</h2>
     <p>sorted by ranking, highest level first. people who reached a level
-       earlier are ranked higher.</p>
+       earlier are ranked higher. users who have not completed level 1 are
+       not listed.</p>
     <ol>
     ''' + '\n'.join(
         ('<li><strong><a href=\'/u{}\'>{}</a></strong> '\
