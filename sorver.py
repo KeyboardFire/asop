@@ -10,6 +10,7 @@ import re
 import time
 import base64
 import os
+import sys
 
 root_pwd_hash = 'ba08da735b2350af9a26c6bd27a8825d3a178e199d5a6b2a2fce93619461'\
                 '017c233c1f55f0aab8dc530db3e52ca2779e933d897ab9fdcbcc5be18d51'\
@@ -298,5 +299,16 @@ class Handler(server.BaseHTTPRequestHandler):
                 c.execute('UPDATE Users SET level = ? WHERE id = ?',
                         (level + 1, uid))
             conn.commit()
+
+    log_file = open('log.txt', 'ab')
+    def log_message(self, fmt, *args):
+        msg = "{} - - [{}] {}\n".format(
+                self.client_address[0],
+                self.log_date_time_string(),
+                fmt % args)
+        self.log_file.write(msg.encode())
+        self.log_file.flush()
+        sys.stderr.write(msg)
+        sys.stderr.flush()
 
 server.HTTPServer(('', 80), Handler).serve_forever()
