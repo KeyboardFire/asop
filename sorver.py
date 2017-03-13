@@ -58,7 +58,8 @@ with open('answers.txt') as f:
 
 static = {
     '/favicon.ico': ('static/favicon.ico', 'image/x-icon'),
-    '/base.css': ('static/base.css', 'text/css')
+    '/base.css': ('static/base.css', 'text/css'),
+    '/robots.txt': ('static/robots.txt', 'text/plain')
 }
 for k in static:
     with open(static[k][0], 'rb') as f:
