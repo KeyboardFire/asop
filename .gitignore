@@ -2,3 +2,4 @@ html/level*.html
 check.py
 users.db
 log.txt
+__pycache__
