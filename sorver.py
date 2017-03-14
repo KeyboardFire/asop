@@ -59,9 +59,11 @@ for s in os.listdir('html'):
         htmldata[s[:-5]] = f.read()
 
 static = {}
-for s in os.listdir('static'):
-    with open('static/' + s, 'rb') as f:
-        static['/' + s] = (f.read(), mimetypes.guess_type(s))
+for (parent, dirs, files) in os.walk('static'):
+    for fname in files:
+        fname = os.path.join(parent, fname)
+        with open(fname, 'rb') as f:
+            static[fname[6:]] = (f.read(), mimetypes.guess_type(fname)[0])
 
 def userinfo_html(uid, username):
     if uid:
