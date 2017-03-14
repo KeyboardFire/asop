@@ -1,4 +1,5 @@
 html/level*.html
+static/level*
 check.py
 users.db
 log.txt
