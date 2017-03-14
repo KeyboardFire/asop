@@ -290,6 +290,7 @@ class Handler(server.BaseHTTPRequestHandler):
         if last_guess and time.time() - last_guess[0] < 60:
             return 'you must wait at least a minute between guesses.'
         else:
+            txt = txt.strip().replace('\r\n', '\n')
             solved = getattr(check, 'check' + str(level))(txt)
             c.execute('''
                     INSERT INTO Guesses (userid, level, guess, solved, tstamp)
