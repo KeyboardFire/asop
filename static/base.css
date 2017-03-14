@@ -50,3 +50,8 @@ input, textarea {
 textarea {
     width: 100%;
 }
+hr {
+    height: 0px;
+    border: none;
+    border-top: 1px dotted #585858;
+}
