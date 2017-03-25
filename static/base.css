@@ -11,6 +11,7 @@ header {
     background-color: #282828;
     width: 100%;
     padding: 10px;
+    box-sizing: border-box;
     margin-bottom: 1em;
 }
 header > #hleft {
@@ -57,4 +58,35 @@ hr {
 }
 li {
     margin: 0.5em 0px;
+}
+.beforemsg {
+    padding-bottom: 1em;
+    margin-bottom: 0px;
+    border-bottom: 1px dotted #585858;
+}
+div.mcontainer {
+    border-bottom: 1px dotted #585858;
+}
+div.message {
+    padding: 5px;
+    margin: 5px;
+}
+div.message.unread {
+    background-color: #622f2d;
+}
+span.tstamp {
+    color: #888888;
+    font-size: 8pt;
+}
+span.msgbadge {
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.5em;
+    border-radius: 1.5em;
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+    background-color: #ab4642;
+    color: #282828;
+    margin-left: -10px;
 }
