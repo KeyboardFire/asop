@@ -123,9 +123,7 @@ def user_html(c, uid, username):
     '''
 
 def userlist_html(c):
-    # caching
-    if time.time() - os.path.getmtime('static/graph.png') > 60 * 10:
-        # 10 minutes have passed since generating the graph
+    if True: #time.time() - os.path.getmtime('static/graph.png') > 60 * 10:
         regraph(c)
     return '''
     <h2>users</h2>
@@ -230,14 +228,14 @@ def guesses_html(c, uid, level):
         return ''
 
 def regraph(c):
-    now = int(time.time())
+    now = int(time.time()) - 60*60*5
     with open('graph.dat', 'w') as f:
         for username, solves in itertools.groupby(c.execute('''
                 SELECT (
                         SELECT username
                         FROM Users u
                         WHERE u.id = g.userid
-                    ), tstamp, level + 1
+                    ), tstamp - 60*60*5, level + 1
                 FROM Guesses g
                 WHERE solved
                 ORDER BY (
@@ -247,7 +245,7 @@ def regraph(c):
                     ) DESC, (
                         SELECT MAX(g2.tstamp)
                         FROM Guesses g2
-                        WHERE g2.userid = g.userid
+                        WHERE g2.userid = g.userid AND g2.solved
                     ) ASC
                 ''').fetchall(), lambda x: x[0]):
             solves = list(solves)
@@ -255,6 +253,8 @@ def regraph(c):
             f.write('\n'.join('{} {}'.format(*x[1:]) for x in solves))
             f.write('\n{} {}\n\n\n'.format(now, solves[-1][2]))
     subprocess.run(['gnuplot', 'gnuplot'])
+    static['/graph.png'] = (open('static/graph.png', 'rb').read(),
+            mimetypes.guess_type('static/graph.png')[0])
 
 class Handler(server.BaseHTTPRequestHandler):
 
