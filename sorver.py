@@ -15,6 +15,8 @@ import sys
 import traceback
 import mimetypes
 import pickle
+import itertools
+import subprocess
 
 import check
 
@@ -121,6 +123,10 @@ def user_html(c, uid, username):
     '''
 
 def userlist_html(c):
+    # caching
+    if time.time() - os.path.getmtime('static/graph.png') > 60 * 10:
+        # 10 minutes have passed since generating the graph
+        regraph(c)
     return '''
     <h2>users</h2>
     <p>sorted by ranking, highest level first. people who reached a level
@@ -148,6 +154,7 @@ def userlist_html(c):
             ''').fetchall()
     ) + '''
     </ol>
+    <img style='width:100%' src='/graph.png'>
     '''
 
 def messages_html(c, uid, username):
@@ -222,6 +229,33 @@ def guesses_html(c, uid, level):
     else:
         return ''
 
+def regraph(c):
+    now = int(time.time())
+    with open('graph.dat', 'w') as f:
+        for username, solves in itertools.groupby(c.execute('''
+                SELECT (
+                        SELECT username
+                        FROM Users u
+                        WHERE u.id = g.userid
+                    ), tstamp, level + 1
+                FROM Guesses g
+                WHERE solved
+                ORDER BY (
+                        SELECT u.level
+                        FROM Users u
+                        WHERE u.id = g.userid
+                    ) DESC, (
+                        SELECT MAX(g2.tstamp)
+                        FROM Guesses g2
+                        WHERE g2.userid = g.userid
+                    ) ASC
+                ''').fetchall(), lambda x: x[0]):
+            solves = list(solves)
+            f.write('"{}"\n'.format(username))
+            f.write('\n'.join('{} {}'.format(*x[1:]) for x in solves))
+            f.write('\n{} {}\n\n\n'.format(now, solves[-1][2]))
+    subprocess.run(['gnuplot', 'gnuplot'])
+
 class Handler(server.BaseHTTPRequestHandler):
 
     def __init__(self, *args):
@@ -267,10 +301,14 @@ class Handler(server.BaseHTTPRequestHandler):
             main_html = messages_html(self.c, uid, username)
         elif self.path == '/guesses' and uid == 1:
             main_html = viewguess_html(self.c)
+        elif self.path == '/regraph' and uid == 1:
+            main_html = 'graph regenerated'
+            regraph(self.c)
         elif re.fullmatch(r'/r[A-Za-z0-9_-]*=*', self.path):
             try:
                 txt = base64.urlsafe_b64decode(self.path[2:].encode()).decode()
-                main_html = html.escape(txt)
+                main_html = '<p>{}</p><p><a href="/">back</a></p>' \
+                        .format(html.escape(txt))
             except (base64.binascii.Error, UnicodeDecodeError):
                 pass
         elif self.path in ['/info', '/db', '/msg']:
@@ -340,7 +378,7 @@ class Handler(server.BaseHTTPRequestHandler):
             loginid = self.register(qs['key'][0], qs['rpassword'][0])
         elif 'dbquery' in qs:
             if xuid == 1:
-                resp = repr(self.c.executescript(qs['dbquery'][0]).fetchall())
+                resp = repr(self.c.execute(qs['dbquery'][0]).fetchall())
             else:
                 resp = 'only Andy can do that'
         elif 'recipient' in qs and 'sendmsg' in qs:
