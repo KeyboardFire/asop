@@ -130,6 +130,7 @@ def userlist_html(c):
     <p>sorted by ranking, highest level first. people who reached a level
        earlier are ranked higher. users who have not completed level 1 are
        not listed.</p>
+    <a href='/graph.png'><img style='width:100%' src='/graph.png'></a>
     <ol>
     ''' + '\n'.join(
         ('<li><strong><a href=\'/u{}\'>{}</a></strong> '\
@@ -152,7 +153,6 @@ def userlist_html(c):
             ''').fetchall()
     ) + '''
     </ol>
-    <img style='width:100%' src='/graph.png'>
     '''
 
 def messages_html(c, uid, username):
