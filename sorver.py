@@ -383,11 +383,7 @@ class Handler(server.BaseHTTPRequestHandler):
                 resp = 'only Andy can do that'
         elif 'recipient' in qs and 'sendmsg' in qs:
             if xuid == 1:
-                self.c.execute('''
-                        INSERT INTO Messages (userid, message, read, tstamp)
-                        VALUES (?, ?, 0, ?)''',
-                        (int(qs['recipient'][0]), qs['sendmsg'][0],
-                            int(time.time())))
+                self.msg(int(qs['recipient'][0]), qs['sendmsg'][0])
                 resp = 'sent'
             else:
                 resp = 'only Andy can do that'
@@ -511,6 +507,16 @@ class Handler(server.BaseHTTPRequestHandler):
             if solved:
                 self.c.execute('UPDATE Users SET level = ? WHERE id = ?',
                         (level + 1, uid))
+
+    def msg(self, recipient, msg):
+        if recipient == 0:
+            maxid = self.c.execute('SELECT MAX(id) FROM USERS').fetchone()[0]
+            for i in range(maxid): self.msg(i+1, msg)
+        else:
+            self.c.execute('''
+                    INSERT INTO Messages (userid, message, read, tstamp)
+                    VALUES (?, ?, 0, ?)
+                    ''', (recipient, msg, int(time.time())))
 
     def log_message(self, fmt, *args):
         msg = "{} - - [{}] {}\n".format(
